@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Clear Setup Flag</title>
+</head>
+<body>
+    <h3>Clear Profile Setup Flag</h3>
+    <p>This will clear the new user flag so you can access the dashboard directly.</p>
+    <button onclick="clearFlag()">Clear Flag & Go to Dashboard</button>
+    
+    <script>
+        function clearFlag() {
+            localStorage.removeItem('isNewUser');
+            alert('Flag cleared! You can now access the dashboard without profile setup redirect.');
+            window.location.href = 'client-dashboard.html';
+        }
+    </script>
+</body>
+</html>

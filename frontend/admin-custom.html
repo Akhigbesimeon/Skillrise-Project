@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - SkillRise</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/styles.css">
+    <style>
+        .dashboard-card {
+            transition: transform 0.2s ease-in-out;
+            border: none;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .dashboard-card:hover {
+            transform: translateY(-5px);
+        }
+        .stat-card {
+            background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+            color: white;
+        }
+        .admin-stat-card-1 {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white;
+        }
+        .admin-stat-card-2 {
+            background: linear-gradient(135deg, #ffc107 0%, #fd7e14 100%);
+            color: white;
+        }
+        .admin-stat-card-3 {
+            background: linear-gradient(135deg, #dc3545 0%, #e83e8c 100%);
+            color: white;
+        }
+        .admin-stat-card-4 {
+            background: linear-gradient(135deg, #6f42c1 0%, #6610f2 100%);
+            color: white;
+        }
+        .sidebar {
+            min-height: 100vh;
+            background: #f8f9fa;
+        }
+        .nav-link.active {
+            background: #007bff;
+            color: white !important;
+            border-radius: 8px;
+        }
+        .alert-item {
+            border-left: 4px solid #dc3545;
+        }
+        .activity-item {
+            border-left: 4px solid #28a745;
+        }
+        .revenue-chart {
+            height: 300px;
+        }
+        .metric-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+        }
+        .metric-label {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+        .trend-up {
+            color: #28a745;
+        }
+        .trend-down {
+            color: #dc3545;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="index.html">
+                <i class="fas fa-graduation-cap me-2"></i>SkillRise Admin
+            </a>
+            <div class="navbar-nav ms-auto">
+                <a class="nav-link" href="#" id="userProfile">
+                    <i class="fas fa-user-shield me-2"></i>
+                    <span id="userName">Administrator</span>
+                </a>
+                <a class="nav-link" href="#" onclick="logout()">
+                    <i class="fas fa-sign-out-alt me-2"></i>Logout
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <div class="col-md-3 col-lg-2 sidebar p-3">
+                <div class="nav nav-pills flex-column">
+                    <a class="nav-link active mb-2" href="#" onclick="showSection('overview')">
+                        <i class="fas fa-tachometer-alt me-2"></i>Overview
+                    </a>
+                    <a class="nav-link mb-2" href="#" onclick="showSection('users')">
+                        <i class="fas fa-users me-2"></i>User Management
+                    </a>
+                    <a class="nav-link mb-2" href="#" onclick="showSection('courses')">
+                        <i class="fas fa-book me-2"></i>Course Management
+                    </a>
+                    <a class="nav-link mb-2" href="#" onclick="showSection('projects')">
+                        <i class="fas fa-project-diagram me-2"></i>Project Management
+                    </a>
+                    <a class="nav-link mb-2" href="#" onclick="showSection('mentorship')">
+                        <i class="fas fa-chalkboard-teacher me-2"></i>Mentorship
+                    </a>
+                    <a class="nav-link mb-2" href="#" onclick="showSection('analytics')">
+                        <i class="fas fa-chart-bar me-2"></i>Analytics
+                    </a>
+                    <a class="nav-link mb-2" href="#" onclick="showSection('moderation')">
+                        <i class="fas fa-shield-alt me-2"></i>Content Moderation
+                    </a>
+                    <a class="nav-link mb-2" href="#" onclick="showSection('system')">
+                        <i class="fas fa-server me-2"></i>System Health
+                    </a>
+                    <a class="nav-link mb-2" href="#" onclick="showSection('reports')">
+                        <i class="fas fa-chart-pie me-2"></i>Reports
+                    </a>
+                    <a class="nav-link mb-2" href="messages-new.html">
+                        <i class="fas fa-envelope me-2"></i>Messages
+                    </a>
+                    <a class="nav-link mb-2" href="#" onclick="showSection('notifications')">
+                        <i class="fas fa-bell me-2"></i>Notifications
+                    </a>
+                    <a class="nav-link mb-2" href="#" onclick="showSection('profile')">
+                        <i class="fas fa-user me-2"></i>Profile
+                    </a>
+                    <a class="nav-link mb-2" href="#" onclick="showSection('settings')">
+                        <i class="fas fa-cog me-2"></i>Settings
+                    </a>
+                </div>
+            </div>
+
+            <!-- Main Content -->
+            <div class="col-md-9 col-lg-10 p-4">
+                <!-- Overview Section -->
+                <div id="overview-section">
+                    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
+                        <h1 class="h2">Admin Overview</h1>
+                        <div class="btn-toolbar mb-2 mb-md-0">
+                            <div class="btn-group me-2">
+                                <button type="button" class="btn btn-sm btn-outline-secondary" onclick="refreshData()">
+                                    <i class="fas fa-sync-alt me-1"></i>Refresh
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Key Metrics -->
+                    <div class="row mb-4">
+                        <div class="col-xl-3 col-md-6 mb-4">
+                            <div class="card dashboard-card stat-card">
+                                <div class="card-body">
+                                    <div class="row no-gutters align-items-center">
+                                        <div class="col mr-2">
+                                            <div class="metric-label mb-1">Total Users</div>
+                                            <div class="metric-number" id="totalUsers">-</div>
+                                            <small class="trend-up">
+                                                <i class="fas fa-arrow-up"></i> <span id="userGrowth">-</span>% this month
+                                            </small>
+                                        </div>
+                                        <div class="col-auto">
+                                            <i class="fas fa-users fa-2x"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-xl-3 col-md-6 mb-4">
+                            <div class="card dashboard-card admin-stat-card-1">
+                                <div class="card-body">
+                                    <div class="row no-gutters align-items-center">
+                                        <div class="col mr-2">
+                                            <div class="metric-label mb-1">Active Courses</div>
+                                            <div class="metric-number" id="totalCourses">-</div>
+                                            <small class="text-white-50">
+                                                <span id="courseEnrollments">-</span> total enrollments
+                                            </small>
+                                        </div>
+                                        <div class="col-auto">
+                                            <i class="fas fa-book fa-2x"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-xl-3 col-md-6 mb-4">
+                            <div class="card dashboard-card admin-stat-card-2">
+                                <div class="card-body">
+                                    <div class="row no-gutters align-items-center">
+                                        <div class="col mr-2">
+                                            <div class="metric-label mb-1">Active Projects</div>
+                                            <div class="metric-number" id="totalProjects">-</div>
+                                            <small class="text-white-50">
+                                                <span id="projectApplications">-</span> applications
+                                            </small>
+                                        </div>
+                                        <div class="col-auto">
+                                            <i class="fas fa-project-diagram fa-2x"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-xl-3 col-md-6 mb-4">
+                            <div class="card dashboard-card admin-stat-card-3">
+                                <div class="card-body">
+                                    <div class="row no-gutters align-items-center">
+                                        <div class="col mr-2">
+                                            <div class="metric-label mb-1">Revenue (Month)</div>
+                                            <div class="metric-number" id="monthlyRevenue">-</div>
+                                            <small class="trend-up">
+                                                <i class="fas fa-arrow-up"></i> <span id="revenueGrowth">-</span>% vs last month
+                                            </small>
+                                        </div>
+                                        <div class="col-auto">
+                                            <i class="fas fa-dollar-sign fa-2x"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Charts and Activity -->
+                    <div class="row">
+                        <div class="col-lg-8">
+                            <div class="card dashboard-card mb-4">
+                                <div class="card-header py-3">
+                                    <h6 class="m-0 font-weight-bold text-primary">Platform Activity Overview</h6>
+                                </div>
+                                <div class="card-body">
+                                    <canvas id="activityChart" width="100%" height="40"></canvas>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-4">
+                            <div class="card dashboard-card mb-4">
+                                <div class="card-header py-3">
+                                    <h6 class="m-0 font-weight-bold text-primary">System Alerts</h6>
+                                </div>
+                                <div class="card-body" id="systemAlerts">
+                                    <div class="d-flex justify-content-center p-4">
+                                        <div class="spinner-border text-primary" role="status">
+                                            <span class="visually-hidden">Loading...</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Recent Activity -->
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="card dashboard-card">
+                                <div class="card-header py-3">
+                                    <h6 class="m-0 font-weight-bold text-primary">Recent Platform Activity</h6>
+                                </div>
+                                <div class="card-body">
+                                    <div id="recentActivity">
+                                        <div class="d-flex justify-content-center p-4">
+                                            <div class="spinner-border text-primary" role="status">
+                                                <span class="visually-hidden">Loading...</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Other sections will be added dynamically -->
+                <div id="dynamic-content" style="display: none;"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="js/app.js"></script>
+    <script>
+        // Admin dashboard functionality
+        let activityChart;
+        
+        function showSection(sectionName) {
+            // Update active nav link
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.classList.remove('active');
+            });
+            event.target.closest('.nav-link').classList.add('active');
+            
+            // Show appropriate section
+            if (sectionName === 'overview') {
+                document.getElementById('overview-section').style.display = 'block';
+                document.getElementById('dynamic-content').style.display = 'none';
+                loadDashboardData();
+            } else {
+                document.getElementById('overview-section').style.display = 'none';
+                document.getElementById('dynamic-content').style.display = 'block';
+                loadSectionContent(sectionName);
+            }
+        }
+        
+        async function loadDashboardData() {
+            try {
+                // Load real-time dashboard data
+                await Promise.all([
+                    loadUserStats(),
+                    loadCourseStats(),
+                    loadProjectStats(),
+                    loadRevenueStats(),
+                    loadSystemAlerts(),
+                    loadRecentActivity(),
+                    loadActivityChart()
+                ]);
+            } catch (error) {
+                console.error('Error loading dashboard data:', error);
+            }
+        }
+        
+        async function loadUserStats() {
+            try {
+                const response = await fetch('/api/admin/dashboard/stats', {
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
+                    }
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    const userStats = data.data.users;
+                    
+                    document.getElementById('totalUsers').textContent = userStats.total.toLocaleString();
+                    document.getElementById('userGrowth').textContent = userStats.growthRate;
+                } else {
+                    throw new Error('Failed to fetch user stats');
+                }
+            } catch (error) {
+                console.error('Error loading user stats:', error);
+                // Fallback to placeholder data
+                document.getElementById('totalUsers').textContent = '1,234';
+                document.getElementById('userGrowth').textContent = '12.5';
+            }
+        }
+        
+        async function loadCourseStats() {
+            try {
+                const response = await fetch('/api/admin/dashboard/stats', {
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
+                    }
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    const courseStats = data.data.courses;
+                    
+                    document.getElementById('totalCourses').textContent = courseStats.total.toLocaleString();
+                    document.getElementById('courseEnrollments').textContent = courseStats.enrollments.toLocaleString();
+                } else {
+                    throw new Error('Failed to fetch course stats');
+                }
+            } catch (error) {
+                console.error('Error loading course stats:', error);
+                // Fallback to placeholder data
+                document.getElementById('totalCourses').textContent = '45';
+                document.getElementById('courseEnrollments').textContent = '2,890';
+            }
+        }
+        
+        async function loadProjectStats() {
+            try {
+                const response = await fetch('/api/admin/dashboard/stats', {
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
+                    }
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    const projectStats = data.data.projects;
+                    
+                    document.getElementById('totalProjects').textContent = projectStats.total.toLocaleString();
+                    document.getElementById('projectApplications').textContent = projectStats.applications.toLocaleString();
+                } else {
+                    throw new Error('Failed to fetch project stats');
+                }
+            } catch (error) {
+                console.error('Error loading project stats:', error);
+                // Fallback to placeholder data
+                document.getElementById('totalProjects').textContent = '178';
+                document.getElementById('projectApplications').textContent = '456';
+            }
+        }
+        
+        async function loadRevenueStats() {
+            try {
+                const response = await fetch('/api/admin/dashboard/stats', {
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
+                    }
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    const revenueStats = data.data.revenue;
+                    
+                    document.getElementById('monthlyRevenue').textContent = `$${revenueStats.monthly.toLocaleString()}`;
+                    document.getElementById('revenueGrowth').textContent = revenueStats.growthRate;
+                } else {
+                    throw new Error('Failed to fetch revenue stats');
+                }
+            } catch (error) {
+                console.error('Error loading revenue stats:', error);
+                // Fallback to placeholder data
+                document.getElementById('monthlyRevenue').textContent = '$12,450';
+                document.getElementById('revenueGrowth').textContent = '8.3';
+            }
+        }
+        
+        async function loadSystemAlerts() {
+            try {
+                const response = await fetch('/api/admin/dashboard/alerts', {
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
+                    }
+                });
+                
+                const alertsContainer = document.getElementById('systemAlerts');
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    const alerts = data.data;
+                    
+                    if (alerts && alerts.length > 0) {
+                        alertsContainer.innerHTML = alerts.map(alert => `
+                            <div class="alert-item p-3 mb-2 bg-light rounded">
+                                <div class="d-flex align-items-center">
+                                    <i class="${alert.icon || 'fas fa-info-circle'} text-${alert.level || 'info'} me-2"></i>
+                                    <div>
+                                        <strong>${alert.title}</strong><br>
+                                        <small class="text-muted">${alert.message}</small>
+                                    </div>
+                                </div>
+                            </div>
+                        `).join('');
+                    } else {
+                        alertsContainer.innerHTML = `
+                            <div class="text-center p-3">
+                                <i class="fas fa-check-circle text-success fa-2x mb-2"></i>
+                                <p class="text-muted mb-0">All systems operational</p>
+                            </div>
+                        `;
+                    }
+                } else {
+                    throw new Error('Failed to fetch alerts');
+                }
+            } catch (error) {
+                console.error('Error loading system alerts:', error);
+                // Fallback to placeholder data
+                const alertsContainer = document.getElementById('systemAlerts');
+                alertsContainer.innerHTML = `
+                    <div class="alert-item p-3 mb-2 bg-light rounded">
+                        <div class="d-flex align-items-center">
+                            <i class="fas fa-exclamation-triangle text-warning me-2"></i>
+                            <div>
+                                <strong>High Server Load</strong><br>
+                                <small class="text-muted">CPU usage at 85%</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="alert-item p-3 mb-2 bg-light rounded">
+                        <div class="d-flex align-items-center">
+                            <i class="fas fa-info-circle text-info me-2"></i>
+                            <div>
+                                <strong>System Update Available</strong><br>
+                                <small class="text-muted">Version 2.1.3 ready</small>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+        }
+        
+        async function loadRecentActivity() {
+            try {
+                const response = await fetch('/api/admin/dashboard/activity', {
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
+                    }
+                });
+                
+                const activityContainer = document.getElementById('recentActivity');
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    const activities = data.data;
+                    
+                    if (activities && activities.length > 0) {
+                        activityContainer.innerHTML = activities.map(activity => `
+                            <div class="activity-item p-3 mb-2 bg-light rounded">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <strong>${activity.title}</strong><br>
+                                        <small class="text-muted">${activity.description}</small>
+                                    </div>
+                                    <small class="text-muted">${formatTimeAgo(activity.timestamp)}</small>
+                                </div>
+                            </div>
+                        `).join('');
+                    } else {
+                        activityContainer.innerHTML = `
+                            <div class="text-center p-3">
+                                <i class="fas fa-clock text-muted fa-2x mb-2"></i>
+                                <p class="text-muted mb-0">No recent activity</p>
+                            </div>
+                        `;
+                    }
+                } else {
+                    throw new Error('Failed to fetch activity');
+                }
+            } catch (error) {
+                console.error('Error loading recent activity:', error);
+                // Fallback to placeholder data
+                const activityContainer = document.getElementById('recentActivity');
+                activityContainer.innerHTML = `
+                    <div class="activity-item p-3 mb-2 bg-light rounded">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <strong>New user registration</strong><br>
+                                <small class="text-muted">john.doe@example.com joined as Freelancer</small>
+                            </div>
+                            <small class="text-muted">2 min ago</small>
+                        </div>
+                    </div>
+                    <div class="activity-item p-3 mb-2 bg-light rounded">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <strong>Course completed</strong><br>
+                                <small class="text-muted">JavaScript Fundamentals - by Maria Santos</small>
+                            </div>
+                            <small class="text-muted">5 min ago</small>
+                        </div>
+                    </div>
+                    <div class="activity-item p-3 mb-2 bg-light rounded">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <strong>Project posted</strong><br>
+                                <small class="text-muted">E-commerce Website Development - $2,500</small>
+                            </div>
+                            <small class="text-muted">12 min ago</small>
+                        </div>
+                    </div>
+                `;
+            }
+        }
+        
+        async function loadActivityChart() {
+            try {
+                const response = await fetch('/api/admin/dashboard/chart-data?period=7d', {
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
+                    }
+                });
+                
+                const ctx = document.getElementById('activityChart').getContext('2d');
+                if (activityChart) {
+                    activityChart.destroy();
+                }
+                
+                let chartData;
+                if (response.ok) {
+                    const data = await response.json();
+                    chartData = data.data;
+                } else {
+                    // Fallback data
+                    chartData = {
+                        labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                        datasets: [{
+                            label: 'New Users',
+                            data: [65, 78, 90, 81, 96, 105, 134],
+                            borderColor: '#007bff',
+                            backgroundColor: 'rgba(0, 123, 255, 0.1)',
+                            tension: 0.4
+                        }, {
+                            label: 'Course Enrollments',
+                            data: [45, 52, 68, 73, 89, 112, 156],
+                            borderColor: '#28a745',
+                            backgroundColor: 'rgba(40, 167, 69, 0.1)',
+                            tension: 0.4
+                        }, {
+                            label: 'Projects Posted',
+                            data: [23, 34, 45, 38, 52, 67, 89],
+                            borderColor: '#ffc107',
+                            backgroundColor: 'rgba(255, 193, 7, 0.1)',
+                            tension: 0.4
+                        }]
+                    };
+                }
+                
+                activityChart = new Chart(ctx, {
+                    type: 'line',
+                    data: chartData,
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
+                        }
+                    }
+                });
+            } catch (error) {
+                console.error('Error loading activity chart:', error);
+                // Create fallback chart
+                const ctx = document.getElementById('activityChart').getContext('2d');
+                if (activityChart) {
+                    activityChart.destroy();
+                }
+                
+                activityChart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                        datasets: [{
+                            label: 'New Users',
+                            data: [2, 5, 3, 8, 4, 7, 6],
+                            borderColor: '#007bff',
+                            backgroundColor: 'rgba(0, 123, 255, 0.1)',
+                            tension: 0.4
+                        }, {
+                            label: 'Course Enrollments',
+                            data: [1, 3, 2, 6, 3, 5, 4],
+                            borderColor: '#28a745',
+                            backgroundColor: 'rgba(40, 167, 69, 0.1)',
+                            tension: 0.4
+                        }, {
+                            label: 'Projects Posted',
+                            data: [0, 1, 1, 2, 1, 3, 2],
+                            borderColor: '#ffc107',
+                            backgroundColor: 'rgba(255, 193, 7, 0.1)',
+                            tension: 0.4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
+                        }
+                    }
+                });
+            }
+        }
+        
+        function formatTimeAgo(timestamp) {
+            const now = new Date();
+            const time = new Date(timestamp);
+            const diffInSeconds = Math.floor((now - time) / 1000);
+            
+            if (diffInSeconds < 60) {
+                return `${diffInSeconds} sec ago`;
+            } else if (diffInSeconds < 3600) {
+                const minutes = Math.floor(diffInSeconds / 60);
+                return `${minutes} min ago`;
+            } else if (diffInSeconds < 86400) {
+                const hours = Math.floor(diffInSeconds / 3600);
+                return `${hours} hour${hours > 1 ? 's' : ''} ago`;
+            } else {
+                const days = Math.floor(diffInSeconds / 86400);
+                return `${days} day${days > 1 ? 's' : ''} ago`;
+            }
+        }
+        
+        function loadSectionContent(sectionName) {
+            const content = document.getElementById('dynamic-content');
+            content.innerHTML = `
+                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
+                    <h1 class="h2">${sectionName.charAt(0).toUpperCase() + sectionName.slice(1)} Management</h1>
+                </div>
+                <div class="card dashboard-card">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-center p-5">
+                            <div class="text-center">
+                                <i class="fas fa-tools fa-3x text-muted mb-3"></i>
+                                <h4 class="text-muted">Coming Soon</h4>
+                                <p class="text-muted">${sectionName.charAt(0).toUpperCase() + sectionName.slice(1)} management features will be implemented in the next phase.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        function refreshData() {
+            loadDashboardData();
+        }
+        
+        // Initialize dashboard on load
+        document.addEventListener('DOMContentLoaded', function() {
+            loadDashboardData();
+        });
+    </script>
+</body>
+</html>

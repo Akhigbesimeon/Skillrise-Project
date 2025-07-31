@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - SkillRise</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/styles.css">
+    <style>
+        .dashboard-card {
+            transition: transform 0.2s ease-in-out;
+            border: none;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .dashboard-card:hover {
+            transform: translateY(-5px);
+        }
+        .stat-card {
+            background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+            color: white;
+        }
+        .admin-stat-card-1 {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white;
+        }
+        .admin-stat-card-2 {
+            background: linear-gradient(135deg, #ffc107 0%, #fd7e14 100%);
+            color: white;
+        }
+        .admin-stat-card-3 {
+            background: linear-gradient(135deg, #dc3545 0%, #e83e8c 100%);
+            color: white;
+        }
+        .sidebar {
+            min-height: 100vh;
+            background: #f8f9fa;
+        }
+        .nav-link.active {
+            background: #007bff;
+            color: white !important;
+            border-radius: 8px;
+        }
+        .activity-item {
+            border-left: 4px solid #28a745;
+        }
+        .alert-item {
+            border-left: 4px solid #dc3545;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="index.html">
+                <i class="fas fa-graduation-cap me-2"></i>SkillRise
+            </a>
+            <div class="navbar-nav ms-auto">
+                <a class="nav-link" href="#" id="userProfile">
+                    <i class="fas fa-user-shield me-2"></i>
+                    <span id="userName">Administrator</span>
+                </a>
+                <a class="nav-link" href="#" onclick="logout()">
+                    <i class="fas fa-sign-out-alt me-2"></i>Logout
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <div class="col-md-3 col-lg-2 sidebar p-3">
+                <div class="nav nav-pills flex-column">
+                    <a class="nav-link active mb-2" href="#" onclick="showSection('overview')">
+                        <i class="fas fa-tachometer-alt me-2"></i>Overview
+                    </a>
+                    <a class="nav-link mb-2" href="#" onclick="showSection('users')">
+                        <i class="fas fa-users me-2"></i>User Management
+                    </a>
+                    <a class="nav-link mb-2" href="#" onclick="showSection('courses')">
+                        <i class="fas fa-book me-2"></i>Course Management
+                    </a>
+                    <a class="nav-link mb-2" href="#" onclick="showSection('projects')">
+                        <i class="fas fa-project-diagram me-2"></i>Project Management
+                    </a>
+                    <a class="nav-link mb-2" href="#" onclick="showSection('mentorship')">
+                        <i class="fas fa-chalkboard-teacher me-2"></i>Mentorship
+                    </a>
+                    <a class="nav-link mb-2" href="#" onclick="showSection('analytics')">
+                        <i class="fas fa-chart-bar me-2"></i>Analytics
+                    </a>
+                    <a class="nav-link mb-2" href="#" onclick="showSection('moderation')">
+                        <i class="fas fa-shield-alt me-2"></i>Content Moderation
+                    </a>
+                    <a class="nav-link mb-2" href="#" onclick="showSection('system')">
+                        <i class="fas fa-server me-2"></i>System Health
+                    </a>
+                    <a class="nav-link mb-2" href="#" onclick="showSection('reports')">
+                        <i class="fas fa-chart-pie me-2"></i>Reports
+                    </a>
+                    <a class="nav-link mb-2" href="messages-new.html">
+                        <i class="fas fa-envelope me-2"></i>Messages
+                    </a>
+                    <a class="nav-link mb-2" href="#" onclick="showSection('notifications')">
+                        <i class="fas fa-bell me-2"></i>Notifications
+                    </a>
+                    <a class="nav-link mb-2" href="#" onclick="showSection('profile')">
+                        <i class="fas fa-user me-2"></i>Profile
+                    </a>
+                    <a class="nav-link mb-2" href="#" onclick="showSection('settings')">
+                        <i class="fas fa-cog me-2"></i>Settings
+                    </a>
+                </div>
+            </div>
+
+            <!-- Main Content -->
+            <div class="col-md-9 col-lg-10 p-4">
+                <!-- Overview Section -->
+                <div id="overview-section" class="dashboard-section">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h2><i class="fas fa-tachometer-alt me-2"></i>Admin Dashboard Overview</h2>
+                        <span class="text-muted" id="lastUpdate">Last updated: Just now</span>
+                    </div>
+
+                    <!-- Stats Cards -->
+                    <div class="row mb-4">
+                        <div class="col-md-3 mb-3">
+                            <div class="card dashboard-card stat-card">
+                                <div class="card-body text-center">
+                                    <i class="fas fa-users fa-2x mb-2"></i>
+                                    <h4 id="totalUsers">-</h4>
+                                    <small>Total Users</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <div class="card dashboard-card admin-stat-card-1">
+                                <div class="card-body text-center">
+                                    <i class="fas fa-book fa-2x mb-2"></i>
+                                    <h4 id="totalCourses">-</h4>
+                                    <small>Active Courses</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <div class="card dashboard-card admin-stat-card-2">
+                                <div class="card-body text-center">
+                                    <i class="fas fa-project-diagram fa-2x mb-2"></i>
+                                    <h4 id="totalProjects">-</h4>
+                                    <small>Active Projects</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <div class="card dashboard-card admin-stat-card-3">
+                                <div class="card-body text-center">
+                                    <i class="fas fa-dollar-sign fa-2x mb-2"></i>
+                                    <h4 id="monthlyRevenue">-</h4>
+                                    <small>Monthly Revenue</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Platform Activity Chart -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <div class="card dashboard-card">
+                                <div class="card-header">
+                                    <h5 class="mb-0"><i class="fas fa-chart-line me-2"></i>Platform Activity Overview</h5>
+                                </div>
+                                <div class="card-body">
+                                    <canvas id="activityChart" height="100"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Recent Activity and System Status -->
+                    <div class="row">
+                        <div class="col-lg-8">
+                            <div class="card dashboard-card">
+                                <div class="card-header">
+                                    <h5 class="mb-0"><i class="fas fa-clock me-2"></i>Recent Platform Activity</h5>
+                                </div>
+                                <div class="card-body" id="recentActivity" style="max-height: 400px; overflow-y: auto;">
+                                    <div class="d-flex justify-content-center p-4">
+                                        <div class="spinner-border text-primary" role="status">
+                                            <span class="visually-hidden">Loading...</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-4">
+                            <div class="card dashboard-card">
+                                <div class="card-header">
+                                    <h5 class="mb-0"><i class="fas fa-exclamation-triangle me-2"></i>System Alerts</h5>
+                                </div>
+                                <div class="card-body" id="systemAlerts" style="max-height: 400px; overflow-y: auto;">
+                                    <div class="d-flex justify-content-center p-4">
+                                        <div class="spinner-border text-primary" role="status">
+                                            <span class="visually-hidden">Loading...</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Other Sections (Hidden by default) -->
+                <div id="users-section" class="dashboard-section" style="display: none;">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h2><i class="fas fa-users me-2"></i>User Management</h2>
+                    </div>
+                    <div class="card dashboard-card">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-center p-5">
+                                <div class="text-center">
+                                    <i class="fas fa-tools fa-3x text-muted mb-3"></i>
+                                    <h4 class="text-muted">Coming Soon</h4>
+                                    <p class="text-muted">User management features will be implemented in the next phase.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="courses-section" class="dashboard-section" style="display: none;">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h2><i class="fas fa-book me-2"></i>Course Management</h2>
+                    </div>
+                    <div class="card dashboard-card">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-center p-5">
+                                <div class="text-center">
+                                    <i class="fas fa-tools fa-3x text-muted mb-3"></i>
+                                    <h4 class="text-muted">Coming Soon</h4>
+                                    <p class="text-muted">Course management features will be implemented in the next phase.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="projects-section" class="dashboard-section" style="display: none;">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h2><i class="fas fa-project-diagram me-2"></i>Project Management</h2>
+                    </div>
+                    <div class="card dashboard-card">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-center p-5">
+                                <div class="text-center">
+                                    <i class="fas fa-tools fa-3x text-muted mb-3"></i>
+                                    <h4 class="text-muted">Coming Soon</h4>
+                                    <p class="text-muted">Project management features will be implemented in the next phase.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="mentorship-section" class="dashboard-section" style="display: none;">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h2><i class="fas fa-chalkboard-teacher me-2"></i>Mentorship Management</h2>
+                    </div>
+                    <div class="card dashboard-card">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-center p-5">
+                                <div class="text-center">
+                                    <i class="fas fa-tools fa-3x text-muted mb-3"></i>
+                                    <h4 class="text-muted">Coming Soon</h4>
+                                    <p class="text-muted">Mentorship management features will be implemented in the next phase.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="analytics-section" class="dashboard-section" style="display: none;">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h2><i class="fas fa-chart-bar me-2"></i>Analytics</h2>
+                    </div>
+                    <div class="card dashboard-card">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-center p-5">
+                                <div class="text-center">
+                                    <i class="fas fa-tools fa-3x text-muted mb-3"></i>
+                                    <h4 class="text-muted">Coming Soon</h4>
+                                    <p class="text-muted">Advanced analytics features will be implemented in the next phase.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="moderation-section" class="dashboard-section" style="display: none;">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h2><i class="fas fa-shield-alt me-2"></i>Content Moderation</h2>
+                    </div>
+                    <div class="card dashboard-card">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-center p-5">
+                                <div class="text-center">
+                                    <i class="fas fa-tools fa-3x text-muted mb-3"></i>
+                                    <h4 class="text-muted">Coming Soon</h4>
+                                    <p class="text-muted">Content moderation tools will be implemented in the next phase.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="system-section" class="dashboard-section" style="display: none;">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h2><i class="fas fa-server me-2"></i>System Health</h2>
+                    </div>
+                    <div class="card dashboard-card">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-center p-5">
+                                <div class="text-center">
+                                    <i class="fas fa-tools fa-3x text-muted mb-3"></i>
+                                    <h4 class="text-muted">Coming Soon</h4>
+                                    <p class="text-muted">System monitoring tools will be implemented in the next phase.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="reports-section" class="dashboard-section" style="display: none;">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h2><i class="fas fa-chart-pie me-2"></i>Reports</h2>
+                    </div>
+                    <div class="card dashboard-card">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-center p-5">
+                                <div class="text-center">
+                                    <i class="fas fa-tools fa-3x text-muted mb-3"></i>
+                                    <h4 class="text-muted">Coming Soon</h4>
+                                    <p class="text-muted">Reporting features will be implemented in the next phase.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="notifications-section" class="dashboard-section" style="display: none;">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h2><i class="fas fa-bell me-2"></i>Notifications</h2>
+                    </div>
+                    <div class="card dashboard-card">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-center p-5">
+                                <div class="text-center">
+                                    <i class="fas fa-tools fa-3x text-muted mb-3"></i>
+                                    <h4 class="text-muted">Coming Soon</h4>
+                                    <p class="text-muted">Notification management will be implemented in the next phase.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="profile-section" class="dashboard-section" style="display: none;">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h2><i class="fas fa-user me-2"></i>Admin Profile</h2>
+                    </div>
+                    <div class="card dashboard-card">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-center p-5">
+                                <div class="text-center">
+                                    <i class="fas fa-tools fa-3x text-muted mb-3"></i>
+                                    <h4 class="text-muted">Coming Soon</h4>
+                                    <p class="text-muted">Profile management will be implemented in the next phase.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="settings-section" class="dashboard-section" style="display: none;">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h2><i class="fas fa-cog me-2"></i>Settings</h2>
+                    </div>
+                    <div class="card dashboard-card">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-center p-5">
+                                <div class="text-center">
+                                    <i class="fas fa-tools fa-3x text-muted mb-3"></i>
+                                    <h4 class="text-muted">Coming Soon</h4>
+                                    <p class="text-muted">Settings will be implemented in the next phase.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="js/app.js"></script>
+    <script>
+        let activityChart;
+
+        function showSection(sectionName) {
+            // Hide all sections
+            document.querySelectorAll('.dashboard-section').forEach(section => {
+                section.style.display = 'none';
+            });
+
+            // Update active nav link
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.classList.remove('active');
+            });
+            event.target.closest('.nav-link').classList.add('active');
+
+            // Show selected section
+            const targetSection = document.getElementById(sectionName + '-section');
+            if (targetSection) {
+                targetSection.style.display = 'block';
+            }
+
+            // Load data for overview section
+            if (sectionName === 'overview') {
+                loadDashboardData();
+            }
+        }
+
+        async function loadDashboardData() {
+            try {
+                await Promise.all([
+                    loadStatistics(),
+                    loadRecentActivity(),
+                    loadSystemAlerts(),
+                    loadActivityChart()
+                ]);
+                
+                // Update last updated time
+                document.getElementById('lastUpdate').textContent = `Last updated: ${new Date().toLocaleTimeString()}`;
+            } catch (error) {
+                console.error('Error loading dashboard data:', error);
+            }
+        }
+
+        async function loadStatistics() {
+            try {
+                const response = await fetch('/api/admin/dashboard/stats', {
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
+                    }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    const stats = data.data;
+
+                    document.getElementById('totalUsers').textContent = stats.users.total.toLocaleString();
+                    document.getElementById('totalCourses').textContent = stats.courses.total.toLocaleString();
+                    document.getElementById('totalProjects').textContent = stats.projects.total.toLocaleString();
+                    document.getElementById('monthlyRevenue').textContent = `$${stats.revenue.monthly.toLocaleString()}`;
+                } else {
+                    throw new Error('Failed to fetch stats');
+                }
+            } catch (error) {
+                console.error('Error loading statistics:', error);
+                // Fallback data
+                document.getElementById('totalUsers').textContent = '1,234';
+                document.getElementById('totalCourses').textContent = '45';
+                document.getElementById('totalProjects').textContent = '178';
+                document.getElementById('monthlyRevenue').textContent = '$12,450';
+            }
+        }
+
+        async function loadRecentActivity() {
+            try {
+                const response = await fetch('/api/admin/dashboard/activity', {
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
+                    }
+                });
+
+                const activityContainer = document.getElementById('recentActivity');
+
+                if (response.ok) {
+                    const data = await response.json();
+                    const activities = data.data;
+
+                    if (activities && activities.length > 0) {
+                        activityContainer.innerHTML = activities.map(activity => `
+                            <div class="activity-item p-3 mb-2 bg-light rounded">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <strong>${activity.title}</strong><br>
+                                        <small class="text-muted">${activity.description}</small>
+                                    </div>
+                                    <small class="text-muted">${formatTimeAgo(activity.timestamp)}</small>
+                                </div>
+                            </div>
+                        `).join('');
+                    } else {
+                        activityContainer.innerHTML = `
+                            <div class="text-center p-3">
+                                <i class="fas fa-clock text-muted fa-2x mb-2"></i>
+                                <p class="text-muted mb-0">No recent activity</p>
+                            </div>
+                        `;
+                    }
+                } else {
+                    throw new Error('Failed to fetch activity');
+                }
+            } catch (error) {
+                console.error('Error loading recent activity:', error);
+                // Fallback data
+                const activityContainer = document.getElementById('recentActivity');
+                activityContainer.innerHTML = `
+                    <div class="activity-item p-3 mb-2 bg-light rounded">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <strong>New user registration</strong><br>
+                                <small class="text-muted">john.doe@example.com joined as Freelancer</small>
+                            </div>
+                            <small class="text-muted">2 min ago</small>
+                        </div>
+                    </div>
+                    <div class="activity-item p-3 mb-2 bg-light rounded">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <strong>Course completed</strong><br>
+                                <small class="text-muted">JavaScript Fundamentals - by Maria Santos</small>
+                            </div>
+                            <small class="text-muted">5 min ago</small>
+                        </div>
+                    </div>
+                `;
+            }
+        }
+
+        async function loadSystemAlerts() {
+            try {
+                const response = await fetch('/api/admin/dashboard/alerts', {
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
+                    }
+                });
+
+                const alertsContainer = document.getElementById('systemAlerts');
+
+                if (response.ok) {
+                    const data = await response.json();
+                    const alerts = data.data;
+
+                    if (alerts && alerts.length > 0) {
+                        alertsContainer.innerHTML = alerts.map(alert => `
+                            <div class="alert-item p-3 mb-2 bg-light rounded">
+                                <div class="d-flex align-items-center">
+                                    <i class="${alert.icon || 'fas fa-info-circle'} text-${alert.level || 'info'} me-2"></i>
+                                    <div>
+                                        <strong>${alert.title}</strong><br>
+                                        <small class="text-muted">${alert.message}</small>
+                                    </div>
+                                </div>
+                            </div>
+                        `).join('');
+                    } else {
+                        alertsContainer.innerHTML = `
+                            <div class="text-center p-3">
+                                <i class="fas fa-check-circle text-success fa-2x mb-2"></i>
+                                <p class="text-muted mb-0">All systems operational</p>
+                            </div>
+                        `;
+                    }
+                } else {
+                    throw new Error('Failed to fetch alerts');
+                }
+            } catch (error) {
+                console.error('Error loading system alerts:', error);
+                // Fallback data
+                const alertsContainer = document.getElementById('systemAlerts');
+                alertsContainer.innerHTML = `
+                    <div class="text-center p-3">
+                        <i class="fas fa-check-circle text-success fa-2x mb-2"></i>
+                        <p class="text-muted mb-0">All systems operational</p>
+                    </div>
+                `;
+            }
+        }
+
+        async function loadActivityChart() {
+            try {
+                const response = await fetch('/api/admin/dashboard/chart-data?period=7d', {
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
+                    }
+                });
+
+                const ctx = document.getElementById('activityChart').getContext('2d');
+                if (activityChart) {
+                    activityChart.destroy();
+                }
+
+                let chartData;
+                if (response.ok) {
+                    const data = await response.json();
+                    chartData = data.data;
+                } else {
+                    // Fallback data
+                    chartData = {
+                        labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                        datasets: [{
+                            label: 'New Users',
+                            data: [2, 5, 3, 8, 4, 7, 6],
+                            borderColor: '#007bff',
+                            backgroundColor: 'rgba(0, 123, 255, 0.1)',
+                            tension: 0.4
+                        }, {
+                            label: 'Course Enrollments', 
+                            data: [1, 3, 2, 6, 3, 5, 4],
+                            borderColor: '#28a745',
+                            backgroundColor: 'rgba(40, 167, 69, 0.1)',
+                            tension: 0.4
+                        }, {
+                            label: 'Projects Posted',
+                            data: [0, 1, 1, 2, 1, 3, 2],
+                            borderColor: '#ffc107',
+                            backgroundColor: 'rgba(255, 193, 7, 0.1)',
+                            tension: 0.4
+                        }]
+                    };
+                }
+
+                activityChart = new Chart(ctx, {
+                    type: 'line',
+                    data: chartData,
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
+                        }
+                    }
+                });
+            } catch (error) {
+                console.error('Error loading activity chart:', error);
+            }
+        }
+
+        function formatTimeAgo(timestamp) {
+            const now = new Date();
+            const time = new Date(timestamp);
+            const diffInSeconds = Math.floor((now - time) / 1000);
+            
+            if (diffInSeconds < 60) {
+                return `${diffInSeconds} sec ago`;
+            } else if (diffInSeconds < 3600) {
+                const minutes = Math.floor(diffInSeconds / 60);
+                return `${minutes} min ago`;
+            } else if (diffInSeconds < 86400) {
+                const hours = Math.floor(diffInSeconds / 3600);
+                return `${hours} hour${hours > 1 ? 's' : ''} ago`;
+            } else {
+                const days = Math.floor(diffInSeconds / 86400);
+                return `${days} day${days > 1 ? 's' : ''} ago`;
+            }
+        }
+
+        // Initialize dashboard on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            loadDashboardData();
+        });
+    </script>
+</body>
+</html>

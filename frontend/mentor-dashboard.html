@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mentor Dashboard - SkillRise</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/styles.css">
+    <style>
+        .dashboard-card {
+            transition: transform 0.2s ease-in-out;
+            border: none;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .dashboard-card:hover {
+            transform: translateY(-5px);
+        }
+        .stat-card {
+            background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+            color: white;
+        }
+        .sidebar {
+            min-height: 100vh;
+            background: #f8f9fa;
+        }
+        .nav-link.active {
+            background: #007bff;
+            color: white !important;
+            border-radius: 8px;
+        }
+        .mentee-card {
+            border-left: 4px solid #007bff;
+        }
+        .session-card {
+            border-left: 4px solid #17a2b8;
+        }
+        .rating-stars {
+            color: #ffc107;
+        }
+        .availability-slot {
+            padding: 8px 12px;
+            margin: 2px;
+            border: 1px solid #dee2e6;
+            border-radius: 20px;
+            display: inline-block;
+            font-size: 0.875rem;
+        }
+        .availability-slot.available {
+            background: #cce7ff;
+            border-color: #007bff;
+        }
+        .availability-slot.booked {
+            background: #f8d7da;
+            border-color: #dc3545;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="index.html">
+                <i class="fas fa-graduation-cap me-2"></i>SkillRise
+            </a>
+            <div class="navbar-nav ms-auto">
+                <a class="nav-link" href="#" id="userProfile">
+                    <i class="fas fa-user-tie me-2"></i>
+                    <span id="userName">Mentor</span>
+                </a>
+                <a class="nav-link" href="#" onclick="logout()">
+                    <i class="fas fa-sign-out-alt me-2"></i>Logout
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <div class="col-md-3 col-lg-2 sidebar p-3">
+                <div class="nav nav-pills flex-column">
+                    <a class="nav-link active mb-2" href="#" onclick="showSection('overview')">
+                        <i class="fas fa-tachometer-alt me-2"></i>Overview
+                    </a>
+                    <a class="nav-link mb-2" href="#" onclick="showSection('mentees')">
+                        <i class="fas fa-users me-2"></i>My Mentees
+                    </a>
+                    <a class="nav-link mb-2" href="#" onclick="showSection('sessions')">
+                        <i class="fas fa-calendar-alt me-2"></i>Sessions
+                    </a>
+                    <a class="nav-link mb-2" href="#" onclick="showSection('requests')">
+                        <i class="fas fa-inbox me-2"></i>New Requests
+                    </a>
+                    <a class="nav-link mb-2" href="#" onclick="showSection('availability')">
+                        <i class="fas fa-clock me-2"></i>Availability
+                    </a>
+                    <a class="nav-link mb-2" href="#" onclick="showSection('earnings')">
+                        <i class="fas fa-dollar-sign me-2"></i>Earnings
+                    </a>
+                    <a class="nav-link mb-2" href="#" onclick="showSection('reviews')">
+                        <i class="fas fa-star me-2"></i>Reviews
+                    </a>
+                    <a class="nav-link mb-2" href="messages-new.html">
+                        <i class="fas fa-envelope me-2"></i>Messages
+                    </a>
+                    <a class="nav-link mb-2" href="#" onclick="showSection('notifications')">
+                        <i class="fas fa-bell me-2"></i>Notifications
+                    </a>
+                    <a class="nav-link mb-2" href="profile.html">
+                        <i class="fas fa-user me-2"></i>Profile
+                    </a>
+                    <a class="nav-link mb-2" href="#" onclick="showSection('settings')">
+                        <i class="fas fa-cog me-2"></i>Settings
+                    </a>
+                </div>
+            </div>
+
+            <!-- Main Content -->
+            <div class="col-md-9 col-lg-10 p-4">
+                <!-- Overview Section -->
+                <div id="overview-section" class="dashboard-section">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h2><i class="fas fa-tachometer-alt me-2"></i>Mentor Dashboard</h2>
+                        <span class="text-muted" id="lastUpdate">Last updated: Just now</span>
+                    </div>
+
+                    <!-- Stats Cards -->
+                    <div class="row mb-4">
+                        <div class="col-md-3 mb-3">
+                            <div class="card dashboard-card stat-card">
+                                <div class="card-body text-center">
+                                    <i class="fas fa-users fa-2x mb-2"></i>
+                                    <h4 id="activeMentees">0</h4>
+                                    <small>Active Mentees</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <div class="card dashboard-card stat-card">
+                                <div class="card-body text-center">
+                                    <i class="fas fa-calendar-check fa-2x mb-2"></i>
+                                    <h4 id="upcomingSessions">0</h4>
+                                    <small>Upcoming Sessions</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <div class="card dashboard-card stat-card">
+                                <div class="card-body text-center">
+                                    <i class="fas fa-inbox fa-2x mb-2"></i>
+                                    <h4 id="newRequests">0</h4>
+                                    <small>New Requests</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <div class="card dashboard-card stat-card">
+                                <div class="card-body text-center">
+                                    <i class="fas fa-star fa-2x mb-2"></i>
+                                    <h4 id="averageRating">0.0</h4>
+                                    <small>Average Rating</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Today's Schedule and Recent Activity -->
+                    <div class="row">
+                        <div class="col-md-8">
+                            <div class="card dashboard-card">
+                                <div class="card-header">
+                                    <h5><i class="fas fa-calendar-day me-2"></i>Today's Schedule</h5>
+                                </div>
+                                <div class="card-body" id="todayScheduleContainer">
+                                    <div class="session-card p-3 mb-3 border rounded">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <div>
+                                                <h6 class="mb-1">JavaScript Fundamentals</h6>
+                                                <p class="text-muted mb-1">with John Doe</p>
+                                                <small class="text-info">
+                                                    <i class="fas fa-clock me-1"></i>2:00 PM - 3:00 PM
+                                                </small>
+                                            </div>
+                                            <div>
+                                                <button class="btn btn-sm btn-outline-success me-2">
+                                                    <i class="fas fa-video me-1"></i>Join
+                                                </button>
+                                                <button class="btn btn-sm btn-outline-primary">
+                                                    <i class="fas fa-envelope me-1"></i>Message
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="session-card p-3 mb-3 border rounded">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <div>
+                                                <h6 class="mb-1">React Development</h6>
+                                                <p class="text-muted mb-1">with Jane Smith</p>
+                                                <small class="text-info">
+                                                    <i class="fas fa-clock me-1"></i>4:00 PM - 5:00 PM
+                                                </small>
+                                            </div>
+                                            <div>
+                                                <button class="btn btn-sm btn-outline-success me-2">
+                                                    <i class="fas fa-video me-1"></i>Join
+                                                </button>
+                                                <button class="btn btn-sm btn-outline-primary">
+                                                    <i class="fas fa-envelope me-1"></i>Message
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card dashboard-card">
+                                <div class="card-header">
+                                    <h5><i class="fas fa-bell me-2"></i>Recent Notifications</h5>
+                                </div>
+                                <div class="card-body" id="recentNotificationsContainer">
+                                    <div class="notification-item mb-3">
+                                        <i class="fas fa-user-plus text-success me-2"></i>
+                                        <small>New mentorship request from Alex Johnson</small>
+                                        <br><small class="text-muted">1 hour ago</small>
+                                    </div>
+                                    <div class="notification-item mb-3">
+                                        <i class="fas fa-star text-warning me-2"></i>
+                                        <small>Sarah Wilson left a 5-star review</small>
+                                        <br><small class="text-muted">3 hours ago</small>
+                                    </div>
+                                    <div class="notification-item mb-3">
+                                        <i class="fas fa-calendar text-info me-2"></i>
+                                        <small>Session scheduled for tomorrow</small>
+                                        <br><small class="text-muted">5 hours ago</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Mentees Section -->
+                <div id="mentees-section" class="dashboard-section" style="display: none;">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h2><i class="fas fa-users me-2"></i>My Mentees</h2>
+                        <div class="btn-group" role="group">
+                            <button class="btn btn-outline-primary active" onclick="filterMentees('all')">All</button>
+                            <button class="btn btn-outline-primary" onclick="filterMentees('active')">Active</button>
+                            <button class="btn btn-outline-primary" onclick="filterMentees('completed')">Completed</button>
+                        </div>
+                    </div>
+
+                    <div class="row" id="menteesContainer">
+                        <div class="col-md-6 col-lg-4 mb-4">
+                            <div class="card dashboard-card mentee-card">
+                                <div class="card-body">
+                                    <div class="d-flex align-items-center mb-3">
+                                        <img src="https://via.placeholder.com/50" class="rounded-circle me-3" alt="Mentee">
+                                        <div>
+                                            <h6 class="mb-0">John Doe</h6>
+                                            <small class="text-muted">JavaScript Developer</small>
+                                        </div>
+                                    </div>
+                                    <p class="card-text small">Learning React.js and Node.js development</p>
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <span class="badge bg-success">Active</span>
+                                        <div>
+                                            <button class="btn btn-sm btn-outline-primary me-1" onclick="scheduleMenteeSession('john-doe')">
+                                                <i class="fas fa-calendar me-1"></i>Schedule
+                                            </button>
+                                            <button class="btn btn-sm btn-outline-success" onclick="messageMentee('john-doe')">
+                                                <i class="fas fa-envelope me-1"></i>Message
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-lg-4 mb-4">
+                            <div class="card dashboard-card mentee-card">
+                                <div class="card-body">
+                                    <div class="d-flex align-items-center mb-3">
+                                        <img src="https://via.placeholder.com/50" class="rounded-circle me-3" alt="Mentee">
+                                        <div>
+                                            <h6 class="mb-0">Jane Smith</h6>
+                                            <small class="text-muted">UI/UX Designer</small>
+                                        </div>
+                                    </div>
+                                    <p class="card-text small">Transitioning to frontend development</p>
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <span class="badge bg-success">Active</span>
+                                        <div>
+                                            <button class="btn btn-sm btn-outline-primary me-1" onclick="scheduleMenteeSession('jane-smith')">
+                                                <i class="fas fa-calendar me-1"></i>Schedule
+                                            </button>
+                                            <button class="btn btn-sm btn-outline-success" onclick="messageMentee('jane-smith')">
+                                                <i class="fas fa-envelope me-1"></i>Message
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sessions Section -->
+                <div id="sessions-section" class="dashboard-section" style="display: none;">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h2><i class="fas fa-calendar-alt me-2"></i>Sessions</h2>
+                        <button class="btn btn-primary" onclick="scheduleNewSession()">
+                            <i class="fas fa-plus me-2"></i>Schedule New Session
+                        </button>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-body" id="sessionsContainer">
+                            <div class="session-card p-3 mb-3 border rounded">
+                                <div class="row align-items-center">
+                                    <div class="col-md-6">
+                                        <h6 class="mb-1">JavaScript Fundamentals</h6>
+                                        <p class="text-muted mb-1">with John Doe</p>
+                                        <small class="text-info">
+                                            <i class="fas fa-calendar me-1"></i>Today, 2:00 PM - 3:00 PM
+                                        </small>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <span class="badge bg-warning">Upcoming</span>
+                                    </div>
+                                    <div class="col-md-3 text-end">
+                                        <button class="btn btn-sm btn-success me-2">
+                                            <i class="fas fa-video me-1"></i>Join
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-danger">
+                                            <i class="fas fa-times me-1"></i>Cancel
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="session-card p-3 mb-3 border rounded">
+                                <div class="row align-items-center">
+                                    <div class="col-md-6">
+                                        <h6 class="mb-1">React Development</h6>
+                                        <p class="text-muted mb-1">with Jane Smith</p>
+                                        <small class="text-info">
+                                            <i class="fas fa-calendar me-1"></i>Today, 4:00 PM - 5:00 PM
+                                        </small>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <span class="badge bg-warning">Upcoming</span>
+                                    </div>
+                                    <div class="col-md-3 text-end">
+                                        <button class="btn btn-sm btn-success me-2">
+                                            <i class="fas fa-video me-1"></i>Join
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-danger">
+                                            <i class="fas fa-times me-1"></i>Cancel
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Requests Section -->
+                <div id="requests-section" class="dashboard-section" style="display: none;">
+                    <h2><i class="fas fa-inbox me-2"></i>New Mentorship Requests</h2>
+                    <div class="card">
+                        <div class="card-body" id="requestsContainer">
+                            <div class="request-card p-3 mb-3 border rounded">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div class="flex-grow-1">
+                                        <h6 class="mb-1">Alex Johnson</h6>
+                                        <p class="text-muted mb-2">Junior Developer looking for React mentorship</p>
+                                        <small class="text-info">Requested 2 hours ago</small>
+                                    </div>
+                                    <div>
+                                        <button class="btn btn-sm btn-success me-2" onclick="acceptRequest('alex-johnson')">
+                                            <i class="fas fa-check me-1"></i>Accept
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-danger" onclick="declineRequest('alex-johnson')">
+                                            <i class="fas fa-times me-1"></i>Decline
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Other sections (simplified for brevity) -->
+                <div id="availability-section" class="dashboard-section" style="display: none;">
+                    <h2><i class="fas fa-clock me-2"></i>Availability Management</h2>
+                    <div class="card">
+                        <div class="card-body">
+                            <p>Set your availability for mentorship sessions:</p>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <h6>This Week</h6>
+                                    <div class="availability-slots">
+                                        <div class="availability-slot available">Mon 2-4 PM</div>
+                                        <div class="availability-slot booked">Tue 1-3 PM</div>
+                                        <div class="availability-slot available">Wed 3-5 PM</div>
+                                        <div class="availability-slot available">Thu 2-4 PM</div>
+                                        <div class="availability-slot booked">Fri 4-6 PM</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <button class="btn btn-primary mt-3">Update Availability</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="earnings-section" class="dashboard-section" style="display: none;">
+                    <h2><i class="fas fa-dollar-sign me-2"></i>Earnings</h2>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="card">
+                                <div class="card-body text-center">
+                                    <h4 class="text-success">$2,450.00</h4>
+                                    <small class="text-muted">Total Earnings</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card">
+                                <div class="card-body text-center">
+                                    <h4 class="text-info">$380.00</h4>
+                                    <small class="text-muted">This Month</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card">
+                                <div class="card-body text-center">
+                                    <h4 class="text-warning">$95.00</h4>
+                                    <small class="text-muted">This Week</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="reviews-section" class="dashboard-section" style="display: none;">
+                    <h2><i class="fas fa-star me-2"></i>Reviews & Ratings</h2>
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="review-item mb-3 p-3 border rounded">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div>
+                                        <h6 class="mb-1">Sarah Wilson</h6>
+                                        <div class="rating-stars mb-2">
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                        </div>
+                                        <p class="mb-0">"Excellent mentor! Very patient and knowledgeable. Helped me understand React concepts clearly."</p>
+                                    </div>
+                                    <small class="text-muted">2 days ago</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="notifications-section" class="dashboard-section" style="display: none;">
+                    <h2><i class="fas fa-bell me-2"></i>Notifications</h2>
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="text-center py-4">
+                                <i class="fas fa-bell-slash fa-3x text-muted mb-3"></i>
+                                <p>No new notifications</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="settings-section" class="dashboard-section" style="display: none;">
+                    <h2><i class="fas fa-cog me-2"></i>Settings</h2>
+                    <div class="card">
+                        <div class="card-header">Mentor Settings</div>
+                        <div class="card-body">
+                            <div class="form-check form-switch mb-3">
+                                <input class="form-check-input" type="checkbox" id="acceptNewRequests" checked>
+                                <label class="form-check-label" for="acceptNewRequests">
+                                    Accept New Mentorship Requests
+                                </label>
+                            </div>
+                            <div class="form-check form-switch mb-3">
+                                <input class="form-check-input" type="checkbox" id="sessionReminders" checked>
+                                <label class="form-check-label" for="sessionReminders">
+                                    Session Reminders
+                                </label>
+                            </div>
+                            <div class="form-check form-switch mb-3">
+                                <input class="form-check-input" type="checkbox" id="reviewNotifications">
+                                <label class="form-check-label" for="reviewNotifications">
+                                    Review Notifications
+                                </label>
+                            </div>
+                            <button class="btn btn-success">Save Settings</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="js/mentor-dashboard.js"></script>
+</body>
+</html>
