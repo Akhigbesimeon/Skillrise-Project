@@ -99,7 +99,7 @@ app.use('/api/notifications', notificationRoutes);
 app.use('/api/moderation', moderationRoutes);
 app.use('/api/monitoring', monitoringRoutes);
 
-// Admin creation moved to scripts/create-admin.js - use npm run create-admin
+
 
 // Health check endpoint
 app.get('/health', (req, res) => {
