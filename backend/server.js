@@ -237,26 +237,32 @@ app.use('*', (req, res) => {
 });
 
 // Start server
-server.listen(port, () => {
-    console.log(`SkillRise server running on port ${port}`);
-    console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
-    
-    // Start system monitoring after a short delay to ensure DB is connected
-    setTimeout(() => {
-        try {
-            systemMonitoringService.startMonitoring(300000); // Monitor every 5 minutes
-            console.log('System monitoring started');
-        } catch (error) {
-            console.log('System monitoring failed to start:', error.message);
-        }
-    }, 3000); // 3 second delay
-    
-    // Cleanup old metrics daily
-    setInterval(() => {
-        try {
-            systemMonitoringService.cleanupOldMetrics(30);
-        } catch (error) {
-            console.log('Metrics cleanup failed:', error.message);
-        }
-    }, 24 * 60 * 60 * 1000); // Every 24 hours
-});
+// For Vercel deployment - export the app
+if (process.env.NODE_ENV !== 'production') {
+    // Only start server in development
+    server.listen(port, () => {
+        console.log(`SkillRise server running on port ${port}`);
+        console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
+        
+        // Start system monitoring after a short delay to ensure DB is connected
+        setTimeout(() => {
+            try {
+                systemMonitoringService.startMonitoring(300000); // Monitor every 5 minutes
+                console.log('System monitoring started');
+            } catch (error) {
+                console.log('System monitoring failed to start:', error.message);
+            }
+        }, 3000); // 3 second delay
+        
+        // Cleanup old metrics daily
+        setInterval(() => {
+            try {
+                systemMonitoringService.cleanupOldMetrics(30);
+            } catch (error) {
+                console.log('Metrics cleanup failed:', error.message);
+            }
+        }, 24 * 60 * 60 * 1000); // Every 24 hours
+    });
+}
+
+module.exports = app;
